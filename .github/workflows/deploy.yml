@@ -1,0 +1,163 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ main ]  # Change this to your default branch name
+
+env:
+  AWS_REGION: us-west-2  # Change to your preferred region
+  INSTANCE_TYPE: t2.micro  # Change instance type if needed
+  AMI_ID: ami-075686beab831bb7f  # Ubuntu 22.04 LTS in us-east-1
+  SECURITY_GROUP_NAME: nutriplan-sg
+  KEY_PAIR_NAME: nutriplan-key
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create security group
+        run: |
+          # Check if security group exists
+          if ! aws ec2 describe-security-groups --group-names ${{ env.SECURITY_GROUP_NAME }} 2>/dev/null; then
+            aws ec2 create-security-group \
+              --group-name ${{ env.SECURITY_GROUP_NAME }} \
+              --description "Security group for NutriPlan application"
+            
+            # Allow SSH, HTTP, and HTTPS
+            aws ec2 authorize-security-group-ingress \
+              --group-name ${{ env.SECURITY_GROUP_NAME }} \
+              --protocol tcp \
+              --port 22 \
+              --cidr 0.0.0.0/0
+            
+            aws ec2 authorize-security-group-ingress \
+              --group-name ${{ env.SECURITY_GROUP_NAME }} \
+              --protocol tcp \
+              --port 80 \
+              --cidr 0.0.0.0/0
+            
+            aws ec2 authorize-security-group-ingress \
+              --group-name ${{ env.SECURITY_GROUP_NAME }} \
+              --protocol tcp \
+              --port 443 \
+              --cidr 0.0.0.0/0
+          fi
+
+      - name: Create key pair
+        run: |
+          # Generate key pair if it doesn't exist
+          if ! aws ec2 describe-key-pairs --key-names ${{ env.KEY_PAIR_NAME }} 2>/dev/null; then
+            aws ec2 create-key-pair \
+              --key-name ${{ env.KEY_PAIR_NAME }} \
+              --query 'KeyMaterial' \
+              --output text > ${{ env.KEY_PAIR_NAME }}.pem
+            chmod 400 ${{ env.KEY_PAIR_NAME }}.pem
+          fi
+
+      - name: Launch EC2 instance
+        id: launch-instance
+        run: |
+          # Launch EC2 instance
+          INSTANCE_ID=$(aws ec2 run-instances \
+            --image-id ${{ env.AMI_ID }} \
+            --count 1 \
+            --instance-type ${{ env.INSTANCE_TYPE }} \
+            --key-name ${{ env.KEY_PAIR_NAME }} \
+            --security-groups ${{ env.SECURITY_GROUP_NAME }} \
+            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=nutriplan}]' \
+            --query 'Instances[0].InstanceId' \
+            --output text)
+          
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+          
+          # Wait for instance to be running
+          aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+          
+          # Get public IP
+          PUBLIC_IP=$(aws ec2 describe-instances \
+            --instance-ids $INSTANCE_ID \
+            --query 'Reservations[0].Instances[0].PublicIpAddress' \
+            --output text)
+          
+          echo "public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --verbose
+          npm list --depth=0
+
+      - name: Create environment file
+        run: |
+          echo "REACT_APP_SUPABASE_URL=${{ secrets.REACT_APP_SUPABASE_URL }}" > .env
+          echo "REACT_APP_SUPABASE_ANON_KEY=${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}" >> .env
+          cat .env
+
+      - name: Build application
+        run: |
+          echo "Starting build process..."
+          npm run build --verbose
+          echo "Build completed. Contents of build directory:"
+          ls -la build/
+
+      - name: Wait for SSH
+        run: |
+          until nc -zv ${{ steps.launch-instance.outputs.public_ip }} 22; do
+            sleep 5
+          done
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          cat ${{ env.KEY_PAIR_NAME }}.pem > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Setup EC2 instance
+        run: |
+          # Wait for cloud-init to complete
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ubuntu@${{ steps.launch-instance.outputs.public_ip }} 'cloud-init status --wait'
+          
+          # Install required packages
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ubuntu@${{ steps.launch-instance.outputs.public_ip }} 'sudo apt update && sudo apt install -y nginx'
+          
+          # Create application directory
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ubuntu@${{ steps.launch-instance.outputs.public_ip }} 'sudo mkdir -p /var/www/nutriplan && sudo chown -R ubuntu:ubuntu /var/www/nutriplan'
+
+      - name: Deploy application
+        run: |
+          # Copy build files and environment file
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -r build/* ubuntu@${{ steps.launch-instance.outputs.public_ip }}:/var/www/nutriplan/
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no .env ubuntu@${{ steps.launch-instance.outputs.public_ip }}:/var/www/nutriplan/
+          
+          # Create Nginx configuration
+          cat > nutriplan.conf << EOL
+          server {
+              listen 80;
+              server_name ${{ steps.launch-instance.outputs.public_ip }};
+
+              root /var/www/nutriplan;
+              index index.html;
+
+              location / {
+                  try_files \$uri \$uri/ /index.html;
+              }
+          }
+          EOL
+          
+          # Copy and configure Nginx
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no nutriplan.conf ubuntu@${{ steps.launch-instance.outputs.public_ip }}:/tmp/
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ubuntu@${{ steps.launch-instance.outputs.public_ip }} 'sudo mv /tmp/nutriplan.conf /etc/nginx/sites-available/nutriplan && sudo ln -sf /etc/nginx/sites-available/nutriplan /etc/nginx/sites-enabled/ && sudo nginx -t && sudo systemctl restart nginx' 

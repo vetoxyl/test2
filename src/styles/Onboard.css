@@ -1,0 +1,157 @@
+/* Container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f3f4f6;
+}
+
+/* Box */
+.box {
+  width: 400px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Question */
+.question {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #4B5563;
+}
+
+/* Subtext */
+.sub {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+#fineprint{
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Labels */
+.label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4B5563;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Input Fields */
+
+.input {
+  width: 92%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+input[name="heightFeet"]{
+  width: 61%;
+}
+
+input[name="heightInches"]{
+  width: 61%;
+}
+
+input[name="currentWeight"]{
+  width: 50%;
+}
+
+input[name="goalWeight"]{
+  width: 50%;
+}
+
+select option:hover {
+  background-color: #059669;
+}
+
+
+
+/* Options Container */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Option Button */
+.optionButton {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #4B5563;
+  background-color: #ffffff;
+  color: #4B5563;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, border 0.3s, color 0.3s;
+}
+
+/* Option Button Hover Effect */
+.optionButton:hover {
+  border: 1px solid #059669;
+  color: #059669;
+}
+
+.optionButton.selected {
+  border: 1px solid #059669;
+  color: #059669;
+}
+
+/* Button Container */
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* General Button */
+.button {
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #059669;
+  background-color: #ffffff;
+  color: #059669;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 30%;
+  transition: background 0.3s;
+}
+
+.button:hover {
+  background-color: #059669;
+  color: #ffffff;
+}
+
+/* Final Text */
+.finalText {
+  font-size: 20px;
+  color: #059669;
+  font-weight: bold;
+}
+
+/* Summary */
+.summary {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+

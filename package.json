@@ -1,0 +1,60 @@
+{
+  "name": "nutriplan",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "@testing-library/dom": "^9.3.3",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "axios": "^1.6.2",
+    "axios-mock-adapter": "^1.22.0",
+    "bootstrap": "^5.3.2",
+    "jest": "^29.7.0",
+    "lucide-react": "^0.294.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.12.0",
+    "react-rating-stars-component": "^2.2.0",
+    "react-ratings-declarative": "^3.4.1",
+    "react-redux": "^9.0.4",
+    "react-router-dom": "^6.21.0",
+    "react-scripts": "5.0.1",
+    "react-star-ratings": "^2.2.0",
+    "web-vitals": "^3.5.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "react-scripts start"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-flow-strip-types": "^7.23.3",
+    "@babel/plugin-transform-runtime": "^7.23.3",
+    "@babel/preset-env": "^7.23.3",
+    "@babel/preset-flow": "^7.23.3",
+    "@babel/preset-react": "^7.23.3",
+    "flow-bin": "^0.220.1"
+  }
+}

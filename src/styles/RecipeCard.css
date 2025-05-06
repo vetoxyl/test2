@@ -1,0 +1,136 @@
+body {
+    background-color: #fdf2c5;
+    margin: 0;
+    padding: 0;
+  }  
+
+.recipe-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  
+  .search-bar {
+    display: flex;
+    margin-bottom: 16px;
+  }
+  
+  .search-bar input {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+  }
+  
+  .search-bar button {
+    padding: 10px 16px;
+    background-color: #3cb371;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .main-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: 16px;
+  }
+  
+  .title-section h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+  
+  .rating {
+    font-size: 14px;
+    color: #777;
+    margin-top: 4px;
+  }
+  
+  .tags {
+    margin-top: 8px;
+  }
+  
+  .tag {
+    display: inline-block;
+    background-color: #fcd34d;
+    color: #4b5563;
+    font-size: 12px;
+    padding: 4px 10px;
+    margin-right: 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  
+  .tabs {
+    display: flex;
+    justify-content: space-between;
+    margin: 16px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    color: #3b82f6;
+    cursor: pointer;
+  }
+  
+  .description {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .description h4 {
+    margin: 16px 0 4px;
+    font-weight: 600;
+  }
+  
+  .description ul {
+    padding-left: 20px;
+    margin: 0;
+  }
+  
+  .description li {
+    margin: 2px 0;
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .cook-btn,
+  .order-btn {
+    flex: 1;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .cook-btn {
+    background-color: #34d399;
+    color: white;
+    margin-right: 10px;
+  }
+  
+  .order-btn {
+    background-color: #10b981;
+    color: white;
+  }
+  

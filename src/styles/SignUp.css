@@ -1,0 +1,28 @@
+.lg-toggle-su {
+    margin-block-end: 0px;
+    background-color: rgba(229, 231, 235, 1);
+    border-radius: 8px;
+    display: grid;
+    gap: 20px;
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    max-width: 294px;
+    height: 31px;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+ .su:active, .su:focus {
+    width: 126px;
+    height: 26px;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    margin: 0px;
+}
+
+ .su {
+    background-color: none;
+    border: none;
+    background: none;
+}

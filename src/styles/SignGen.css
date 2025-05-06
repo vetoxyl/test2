@@ -1,0 +1,25 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif !important;
+  color: rgba(75, 85, 99, 1);
+}
+
+
+
+.home-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
