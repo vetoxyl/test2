@@ -98,7 +98,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --verbose
+          rm -f package-lock.json
+          npm install --verbose
           npm list --depth=0
 
       - name: Create environment file
